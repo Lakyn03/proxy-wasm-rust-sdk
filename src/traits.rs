@@ -376,6 +376,10 @@ pub trait HttpContext: Context {
     fn on_http_request_trailers(&mut self, _num_trailers: usize) -> Action {
         Action::Continue
     }
+    
+    fn on_http_upstream_select(&mut self) -> Action {
+        Action::Continue
+    }
 
     fn get_http_request_trailers(&self) -> Vec<(String, String)> {
         hostcalls::get_map(MapType::HttpRequestTrailers).unwrap()
