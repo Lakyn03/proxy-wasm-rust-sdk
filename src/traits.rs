@@ -377,6 +377,9 @@ pub trait HttpContext: Context {
         Action::Continue
     }
 
+    fn on_http_upstream_select(&mut self, last_state: LastUpstreamState) {
+    }
+
     fn get_http_request_trailers(&self) -> Vec<(String, String)> {
         hostcalls::get_map(MapType::HttpRequestTrailers).unwrap()
     }

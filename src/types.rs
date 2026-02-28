@@ -139,4 +139,14 @@ pub enum GrpcStatusCode {
     Unauthenticated = 16,
 }
 
+#[repr(u32)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[non_exhaustive]
+pub enum LastUpstreamState {
+    Ok = 0,
+    Next = 1,
+    Failed = 2,
+    NoInfo = 3,
+}
+
 pub type Bytes = Vec<u8>;

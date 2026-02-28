@@ -362,6 +362,15 @@ impl Dispatcher {
         }
     }
 
+    fn on_http_upstream_select(&self, context_id: u32, last_state: LastUpstreamState) {
+        if let Some(http_stream) = self.http_streams.borrow_mut().get_mut(&context_id) {
+            self.active_id.set(context_id);
+            http_stream.on_http_upstream_select(last_state)
+        } else {
+            panic!("invalid context_id")
+        }
+    }
+
     fn on_http_response_headers(
         &self,
         context_id: u32,
@@ -670,6 +679,11 @@ pub extern "C" fn proxy_on_request_body(
 #[no_mangle]
 pub extern "C" fn proxy_on_request_trailers(context_id: u32, num_trailers: usize) -> Action {
     DISPATCHER.with(|dispatcher| dispatcher.on_http_request_trailers(context_id, num_trailers))
+}
+
+#[no_mangle]
+pub extern "C" fn proxy_on_upstream_select(context_id: u32, last_state: LastUpstreamState) {
+    DISPATCHER.with(|dispatcher| dispatcher.on_http_upstream_select(context_id, last_state))
 }
 
 #[no_mangle]
