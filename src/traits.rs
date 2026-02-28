@@ -376,7 +376,7 @@ pub trait HttpContext: Context {
     fn on_http_request_trailers(&mut self, _num_trailers: usize) -> Action {
         Action::Continue
     }
-    
+
     fn on_http_upstream_select(&mut self) -> Action {
         Action::Continue
     }
@@ -568,4 +568,8 @@ pub trait HttpContext: Context {
     }
 
     fn on_log(&mut self) {}
+
+    fn set_upstream(&self, upstream: &str) {
+        hostcalls::set_upstream(upstream).unwrap()
+    }
 }

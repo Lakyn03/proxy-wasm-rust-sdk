@@ -1157,6 +1157,20 @@ pub fn increment_metric(metric_id: u32, offset: i64) -> Result<(), Status> {
     }
 }
 
+extern "C" {
+    fn proxy_set_upstream(upstream_data: *const u8, upstream_size: usize) -> Status;
+}
+
+pub fn set_upstream(upstream: &str) -> Result<(), Status> {
+    unsafe {
+        match proxy_set_upstream(upstream.as_ptr(), upstream.len()) {
+            Status::Ok => Ok(()),
+            Status::BadArgument => Err(Status::BadArgument),
+            status => panic!("unexpected status: {}", status as u32),
+        }
+    }
+}
+
 #[cfg(all(test, feature = "mockalloc"))]
 mod mocks {
     use crate::hostcalls::utils::tests::SERIALIZED_MAP;
