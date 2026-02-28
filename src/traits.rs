@@ -567,4 +567,8 @@ pub trait HttpContext: Context {
     }
 
     fn on_log(&mut self) {}
+
+    fn set_upstream(&self, address: &str, port: u32) {
+        hostcalls::set_upstream(address, port).unwrap()
+    }
 }
