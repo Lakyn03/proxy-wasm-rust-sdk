@@ -362,10 +362,19 @@ impl Dispatcher {
         }
     }
 
-    fn on_http_upstream_select(&self, context_id: u32, last_state: LastUpstreamState) {
+    fn on_http_upstream_select(&self, context_id: u32) {
         if let Some(http_stream) = self.http_streams.borrow_mut().get_mut(&context_id) {
             self.active_id.set(context_id);
-            http_stream.on_http_upstream_select(last_state)
+            http_stream.on_http_upstream_select()
+        } else {
+            panic!("invalid context_id")
+        }
+    }
+
+    fn on_http_upstream_info(&self, context_id: u32, last_state: LastUpstreamState) {
+        if let Some(http_stream) = self.http_streams.borrow_mut().get_mut(&context_id) {
+            self.active_id.set(context_id);
+            http_stream.on_http_upstream_info(last_state)
         } else {
             panic!("invalid context_id")
         }
@@ -682,8 +691,13 @@ pub extern "C" fn proxy_on_request_trailers(context_id: u32, num_trailers: usize
 }
 
 #[no_mangle]
-pub extern "C" fn proxy_on_upstream_select(context_id: u32, last_state: LastUpstreamState) {
-    DISPATCHER.with(|dispatcher| dispatcher.on_http_upstream_select(context_id, last_state))
+pub extern "C" fn proxy_on_upstream_select(context_id: u32) {
+    DISPATCHER.with(|dispatcher| dispatcher.on_http_upstream_select(context_id))
+}
+
+#[no_mangle]
+pub extern "C" fn proxy_on_upstream_info(context_id: u32, last_state: LastUpstreamState) {
+    DISPATCHER.with(|dispatcher| dispatcher.on_http_upstream_info(context_id, last_state))
 }
 
 #[no_mangle]
