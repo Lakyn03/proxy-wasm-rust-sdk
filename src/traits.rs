@@ -377,7 +377,10 @@ pub trait HttpContext: Context {
         Action::Continue
     }
 
-    fn on_http_upstream_select(&mut self, last_state: LastUpstreamState) {
+    fn on_http_upstream_select(&mut self) {
+    }
+
+    fn on_http_upstream_info(&mut self, _last_state: LastUpstreamState) {
     }
 
     fn get_http_request_trailers(&self) -> Vec<(String, String)> {

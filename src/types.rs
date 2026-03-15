@@ -144,9 +144,8 @@ pub enum GrpcStatusCode {
 #[non_exhaustive]
 pub enum LastUpstreamState {
     Ok = 0,
-    Next = 1,
+    Declined = 1,
     Failed = 2,
-    NoInfo = 3,
 }
 
 pub type Bytes = Vec<u8>;
