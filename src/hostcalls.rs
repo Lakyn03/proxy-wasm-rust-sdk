@@ -1175,6 +1175,19 @@ pub fn set_upstream(address: &str, port: u32) -> Result<(), Status> {
     }
 }
 
+extern "C" {
+    fn proxy_accept_upstream_response() -> Status;
+}
+
+pub fn accept_upstream_response() -> Result<(), Status> {
+    unsafe {
+        match proxy_accept_upstream_response() {
+            Status::Ok => Ok(()),
+            status => panic!("unexpected status: {}", status as u32),
+        }
+    }
+}
+
 #[cfg(all(test, feature = "mockalloc"))]
 mod mocks {
     use crate::hostcalls::utils::tests::SERIALIZED_MAP;
