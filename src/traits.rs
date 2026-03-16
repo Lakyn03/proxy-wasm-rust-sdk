@@ -380,6 +380,9 @@ pub trait HttpContext: Context {
     fn on_http_upstream_select(&mut self) {
     }
 
+    fn on_http_upstream_special_response(&mut self, _status: u32) {
+    }
+
     fn on_http_upstream_info(&mut self, _last_state: LastUpstreamState) {
     }
 
