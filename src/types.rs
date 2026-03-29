@@ -96,6 +96,7 @@ pub enum MapType {
     GrpcReceiveTrailingMetadata = 5,
     HttpCallResponseHeaders = 6,
     HttpCallResponseTrailers = 7,
+    HttpUpstreamResponseHeaders = 8,
 }
 
 #[repr(u32)]

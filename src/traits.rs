@@ -383,6 +383,22 @@ pub trait HttpContext: Context {
     fn on_http_next_upstream(&mut self, _status: u32) {
     }
 
+    fn get_http_upstream_response_headers(&self) -> Vec<(String, String)> {
+        hostcalls::get_map(MapType::HttpUpstreamResponseHeaders).unwrap()
+    }
+
+    fn get_http_upstream_response_headers_bytes(&self) -> Vec<(String, Bytes)> {
+        hostcalls::get_map_bytes(MapType::HttpUpstreamResponseHeaders).unwrap()
+    }
+
+    fn get_http_upstream_response_header(&self, name: &str) -> Option<String> {
+        hostcalls::get_map_value(MapType::HttpUpstreamResponseHeaders, name).unwrap()
+    }
+
+    fn get_http_upstream_response_header_bytes(&self, name: &str) -> Option<Bytes> {
+        hostcalls::get_map_value_bytes(MapType::HttpUpstreamResponseHeaders, name).unwrap()
+    }
+
     fn on_http_upstream_info(&mut self, _last_state: LastUpstreamState) {
     }
 
