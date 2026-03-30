@@ -597,4 +597,12 @@ pub trait HttpContext: Context {
     fn accept_upstream_response(&self) {
         hostcalls::accept_upstream_response().unwrap()
     }
+
+    fn get_upstream_timeouts(&self) -> (u32, u32, u32) {
+        hostcalls::get_upstream_timeouts().unwrap()
+    }
+
+    fn set_upstream_timeouts(&self, connect: u32, send: u32, read: u32) {
+        hostcalls::set_upstream_timeouts(connect, send, read).unwrap()
+    }
 }

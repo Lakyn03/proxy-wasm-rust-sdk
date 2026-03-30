@@ -1188,6 +1188,44 @@ pub fn accept_upstream_response() -> Result<(), Status> {
     }
 }
 
+extern "C" {
+    fn proxy_get_upstream_timeouts(
+        return_connect_timeout: *mut u32,
+        return_send_timeout: *mut u32,
+        return_read_timeout: *mut u32,
+    ) -> Status;
+}
+
+pub fn get_upstream_timeouts() -> Result<(u32, u32, u32), Status> {
+    let mut connect: u32 = 0;
+    let mut send: u32 = 0;
+    let mut read: u32 = 0;
+
+    unsafe {
+        match proxy_get_upstream_timeouts(&mut connect, &mut send, &mut read) {
+            Status::Ok => Ok((connect, send, read)),
+            status => panic!("unexpected status: {}", status as u32),
+        }
+    }
+}
+
+extern "C" {
+    fn proxy_set_upstream_timeouts(
+        connect_timeout: u32,
+        send_timeout: u32,
+        read_timeout: u32,
+    ) -> Status;
+}
+
+pub fn set_upstream_timeouts(connect: u32, send: u32, read: u32) -> Result<(), Status> {
+    unsafe {
+        match proxy_set_upstream_timeouts(connect, send, read) {
+            Status::Ok => Ok(()),
+            status => panic!("unexpected status: {}", status as u32),
+        }
+    }
+}
+
 #[cfg(all(test, feature = "mockalloc"))]
 mod mocks {
     use crate::hostcalls::utils::tests::SERIALIZED_MAP;
