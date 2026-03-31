@@ -113,6 +113,10 @@ pub fn get_buffer(
     }
 }
 
+pub fn deserialize_upstream_configuration(bytes: &[u8]) -> Vec<UpstreamServer> {
+    utils::deserialize_upstream_configuration(bytes)
+}
+
 extern "C" {
     fn proxy_set_buffer_bytes(
         buffer_type: BufferType,
@@ -1274,7 +1278,7 @@ mod tests {
 }
 
 mod utils {
-    use crate::types::Bytes;
+    use crate::types::{Bytes, UpstreamServer};
     use std::convert::TryFrom;
 
     pub(super) fn serialize_property_path(path: Vec<&str>) -> Bytes {
@@ -1377,6 +1381,34 @@ mod utils {
             map.push((String::from_utf8(key).unwrap(), value));
         }
         map
+    }
+
+    pub fn deserialize_upstream_configuration(bytes: &[u8]) -> Vec<UpstreamServer> {
+        if bytes.is_empty() {
+            return Vec::new();
+        }
+
+        let count = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[0..4]).unwrap()) as usize;
+        let mut upstreams = Vec::with_capacity(count);
+        let mut p = 4;
+        for _ in 0..count {
+            let addr_len = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap()) as usize;
+            p += 4;
+            let address = String::from_utf8(bytes[p..p + addr_len].to_vec()).unwrap();
+            p += addr_len;
+            let port = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap());
+            p += 4;
+            let weight = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap());
+            p += 4;
+            let max_fails = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap());
+            p += 4;
+            let fail_timeout = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap());
+            p += 4;
+            let backup = u32::from_le_bytes(<[u8; 4]>::try_from(&bytes[p..p + 4]).unwrap()) != 0;
+            p += 4;
+            upstreams.push(UpstreamServer { address, port, weight, max_fails, fail_timeout, backup });
+        }
+        upstreams
     }
 
     #[cfg(test)]

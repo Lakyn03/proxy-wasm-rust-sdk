@@ -82,6 +82,7 @@ pub enum BufferType {
     VmConfiguration = 6,
     PluginConfiguration = 7,
     CallData = 8,
+    UpstreamConfiguration = 9,
 }
 
 #[repr(u32)]
@@ -149,3 +150,13 @@ pub enum LastUpstreamState {
 }
 
 pub type Bytes = Vec<u8>;
+
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
+pub struct UpstreamServer {
+    pub address: String,
+    pub port: u32,
+    pub weight: u32,
+    pub max_fails: u32,
+    pub fail_timeout: u32,
+    pub backup: bool,
+}

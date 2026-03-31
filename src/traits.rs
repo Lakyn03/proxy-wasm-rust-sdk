@@ -237,6 +237,11 @@ pub trait RootContext: Context {
         hostcalls::get_buffer(BufferType::PluginConfiguration, 0, usize::MAX).unwrap()
     }
 
+    fn get_upstream_configuration(&self) -> Option<Vec<UpstreamServer>> {
+        let bytes = hostcalls::get_buffer(BufferType::UpstreamConfiguration, 0, usize::MAX).unwrap()?;
+        Some(hostcalls::deserialize_upstream_configuration(&bytes))
+    }
+
     fn set_tick_period(&self, period: Duration) {
         hostcalls::set_tick_period(period).unwrap()
     }
