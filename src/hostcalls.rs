@@ -1165,13 +1165,32 @@ extern "C" {
     fn proxy_set_upstream(
         address_data: *const u8,
         address_size: usize,
-        port: u32
+        port: u32,
+        tls: u32,
+        sni_data: *const u8,
+        sni_size: usize,
     ) -> Status;
 }
 
-pub fn set_upstream(address: &str, port: u32) -> Result<(), Status> {
+pub fn set_upstream(
+    address: &str,
+    port: u32,
+    tls: bool,
+    sni: Option<&str>,
+) -> Result<(), Status> {
+    let (sni_ptr, sni_len) = match sni {
+        Some(s) => (s.as_ptr(), s.len()),
+        None => (std::ptr::null(), 0),
+    };
     unsafe {
-        match proxy_set_upstream(address.as_ptr(), address.len(), port) {
+        match proxy_set_upstream(
+            address.as_ptr(),
+            address.len(),
+            port,
+            tls as u32,
+            sni_ptr,
+            sni_len,
+        ) {
             Status::Ok => Ok(()),
             Status::BadArgument => Err(Status::BadArgument),
             status => panic!("unexpected status: {}", status as u32),
